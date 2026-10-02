@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/header.png" alt="Email sequence skill for Claude Code" width="100%">
+</p>
+
 # Email sequence skill for Claude Code
 
 **An email sequence is the series of emails after someone raises their hand.**
@@ -9,6 +13,10 @@ The scorer refuses a generic drip and a cold email.
 [![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-Skill-blue)](https://claude.ai/claude-code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![No paid APIs](https://img.shields.io/badge/paid%20APIs-none-success)
+
+<p align="center">
+  <img src="./assets/demo.gif" alt="Email sequence skill — welcome, bargain, and nurture pass; a generic drip fails" width="100%">
+</p>
 
 The build guide teaches a human. This pack teaches an agent.
 
