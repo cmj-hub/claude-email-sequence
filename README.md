@@ -1,14 +1,16 @@
-# Email sequence
+# Email sequence skill for Claude Code
 
-An email sequence is the series of emails after someone raises their hand.
+**An email sequence is the series of emails after someone raises their hand.**
 
 You hold a welcome, delivery of the bargain, then nurture tied to the pain they showed.
 
 The scorer refuses a generic drip and a cold email.
 
-The build guide teaches a human. This pack teaches an agent.
+[![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-Skill-blue)](https://claude.ai/claude-code)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![No paid APIs](https://img.shields.io/badge/paid%20APIs-none-success)
 
-Give the instrument. Sell the compounding.
+The build guide teaches a human. This pack teaches an agent.
 
 ## Install
 
@@ -16,7 +18,7 @@ Give the instrument. Sell the compounding.
 npx skills add cmj-hub/claude-email-sequence --all -g --full-depth
 ```
 
-Works in Claude Code, Cursor, Codex, Grok, Copilot, Windsurf, Cline, OpenCode, and the rest of the skills CLI list.
+Installs into Claude Code, Cursor, Codex, Grok, Copilot, Windsurf, Cline, and OpenCode. The scorer is Python in this repo. It does not call a paid API.
 
 ## What you walk out with in 15 minutes
 
@@ -33,7 +35,25 @@ The good draft exits 0 and prints the welcome, the bargain, and the nurture. The
 
 It will not send the email. It does not write a generic drip. It will not write a cold email.
 
-This pack drafts and scores the sequence after someone opted in. It will not pick the newsletter issue, ingest a list, or fire a send. That is the course and Operator Pass: the catalog that keeps moving, the tools that stay calibrated, the Friday room where you bring the artifact.
+## Does this include a newsletter?
+
+One issue can sit inside the sequence. A newsletter product is not a separate pack.
+
+## Does this send the sequence?
+
+No. It scores the draft. Your email tool sends it.
+
+## Companion packs
+
+- [claude-psp](https://github.com/cmj-hub/claude-psp) — Ideal customer profile
+- [claude-evp](https://github.com/cmj-hub/claude-evp) — Value proposition
+- [claude-cold-email](https://github.com/cmj-hub/claude-cold-email) — Cold email
+- [claude-founder-brand](https://github.com/cmj-hub/claude-founder-brand) — LinkedIn posts
+- [claude-pricing](https://github.com/cmj-hub/claude-pricing) — Pricing strategy
+- [claude-landing-page](https://github.com/cmj-hub/claude-landing-page) — Landing page
+- [claude-geo](https://github.com/cmj-hub/claude-geo) — Generative engine optimization
+- [claude-sales-offer](https://github.com/cmj-hub/claude-sales-offer) — Sales offer
+- [claude-prospect-list](https://github.com/cmj-hub/claude-prospect-list) — Sales prospecting
 
 ## License
 
