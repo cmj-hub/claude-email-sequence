@@ -1,4 +1,6 @@
-# Lifecycle email
+# Email sequence
+
+An email sequence is the series of emails after someone raises their hand.
 
 You hold a welcome, delivery of the bargain, then nurture tied to the pain they showed.
 
@@ -11,7 +13,7 @@ Give the instrument. Sell the compounding.
 ## Install
 
 ```bash
-npx skills add cmj-hub/claude-lifecycle --all -g --full-depth
+npx skills add cmj-hub/claude-email-sequence --all -g --full-depth
 ```
 
 Works in Claude Code, Cursor, Codex, Grok, Copilot, Windsurf, Cline, OpenCode, and the rest of the skills CLI list.
