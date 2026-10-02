@@ -1,24 +1,20 @@
 <p align="center">
-  <img src="./assets/header.png" alt="Email sequence skill for Claude Code" width="100%">
+  <img src="./assets/lockup.png" width="880" alt="Email sequence skill for Claude Code. An email sequence is the series of emails after someone raises their hand.">
 </p>
 
 # Email sequence skill for Claude Code
 
-**An email sequence is the series of emails after someone raises their hand.**
+An email sequence is the series of emails after someone raises their hand.
 
-You hold a welcome, delivery of the bargain, then nurture tied to the pain they showed.
+The sample starts with the trial checklist they asked for.
 
-The scorer refuses a generic drip and a cold email.
-
-[![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-Skill-blue)](https://claude.ai/claude-code)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![No paid APIs](https://img.shields.io/badge/paid%20APIs-none-success)
+The good draft passes. A generic drip fails the score.
 
 <p align="center">
   <img src="./assets/demo.gif" alt="Email sequence skill — welcome, bargain, and nurture pass; a generic drip fails" width="100%">
 </p>
 
-The build guide teaches a human. This pack teaches an agent.
+The build guide teaches a human. The pack teaches an agent.
 
 ## Install
 
@@ -26,7 +22,13 @@ The build guide teaches a human. This pack teaches an agent.
 npx skills add cmj-hub/claude-email-sequence --all -g --full-depth
 ```
 
-Installs into Claude Code, Cursor, Codex, Grok, Copilot, Windsurf, Cline, and OpenCode. The scorer is Python in this repo. It does not call a paid API.
+`--all` writes this pack for every host the installer knows. One host:
+
+```bash
+npx skills add cmj-hub/claude-email-sequence --skill '*' -g --full-depth -y -a claude-code
+```
+
+Swap `claude-code` for `cursor`, `codex`, `grok`, `github-copilot`, `windsurf`, `cline`, or `opencode`. The scorer is Python in this repo. It does not call a paid API.
 
 ## What you walk out with in 15 minutes
 
@@ -56,23 +58,21 @@ No. It scores the draft. Your email tool sends it.
 - [Email sequence pack](https://jaymountconsulting.com/skills/claude-email-sequence) — this pack's page
 - [Skill packs catalog](https://jaymountconsulting.com/skills) — install paths + every pack
 
+## Free, no signup
+
+[All free tools](https://jaymountconsulting.com/prototypes)
+
 ## Free, by email
 
 [**Growth Audit**](https://jaymountconsulting.com/growth-audit) — architecture gaps in the GTM you already run. Free written report.
 
 [**Friday Signal**](https://jaymountconsulting.com/newsletter/signal) — one Friday GTM read. No pitch in it.
 
-## Companion packs
+## Next
 
-- [claude-psp](https://github.com/cmj-hub/claude-psp) — Ideal customer profile
-- [claude-evp](https://github.com/cmj-hub/claude-evp) — Value proposition
-- [claude-cold-email](https://github.com/cmj-hub/claude-cold-email) — Cold email
-- [claude-founder-brand](https://github.com/cmj-hub/claude-founder-brand) — LinkedIn posts
-- [claude-pricing](https://github.com/cmj-hub/claude-pricing) — Pricing strategy
-- [claude-landing-page](https://github.com/cmj-hub/claude-landing-page) — Landing page
-- [claude-geo](https://github.com/cmj-hub/claude-geo) — Generative engine optimization
-- [claude-sales-offer](https://github.com/cmj-hub/claude-sales-offer) — Sales offer
-- [claude-prospect-list](https://github.com/cmj-hub/claude-prospect-list) — Sales prospecting
+Previous: [Cold email](https://github.com/cmj-hub/claude-cold-email)
+
+Next: [Sales prospecting](https://github.com/cmj-hub/claude-prospect-list)
 
 ## License
 
