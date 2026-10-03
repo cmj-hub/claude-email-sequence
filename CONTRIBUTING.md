@@ -12,8 +12,8 @@ before you contribute.
   an issue first if it's a substantial addition.
 - **Calibration improvements** to the scoring scripts — if you can
   show a case where the script scores wrong, that's gold.
-- **Cross-runtime ports** (Cursor, Gemini CLI, Codex) — see the
-  Install section of the README.
+- **Cross-runtime ports** (Cursor, Gemini CLI, Codex) — host paths
+  are on the skill packs catalog linked from the README.
 - **Translation** of the framework reference docs.
 
 ## What doesn't land
@@ -34,8 +34,6 @@ before you contribute.
 ```bash
 git clone https://github.com/cmj-hub/claude-email-sequence.git
 cd claude-email-sequence
-# Install into local agents (Claude Code, Cursor, Codex, …)
-npx skills add cmj-hub/claude-email-sequence --all -g --full-depth
 ```
 
 For Python scripts:
