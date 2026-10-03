@@ -36,7 +36,7 @@ Go back to step 2 if step 3 fails.
 
 ## Run
 
-```bash
+```
 python3 scripts/score.py --file examples/lifecycle-good.json
 python3 scripts/score.py --file examples/lifecycle-refused.json
 ```
@@ -47,7 +47,7 @@ The JSON object has four strings: `pain`, `welcome`, `bargain`, and `nurture`. A
 
 Python 3 standard library only. No network. No send.
 
-## Shell
+## Example draft
 
 ```json
 {

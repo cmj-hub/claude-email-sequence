@@ -23,7 +23,8 @@ before you contribute.
   pillars) — these are course-anchored.
 - Adding LLM calls inside the skills. The whole point is that the
   skills are deterministic.
-- Adding paid-API dependencies to scripts. Scripts must work zero-dep.
+- Adding third-party packages to scripts. Scripts must work with the
+  Python standard library only.
 - Renaming `claude-*` → `<other-runtime>-*`. We ship per-runtime ports
   as separate plugins instead.
 - Turning this pack into a send tool or a cold-email writer. It scores
@@ -31,15 +32,9 @@ before you contribute.
 
 ## Development setup
 
-```bash
+```
 git clone https://github.com/cmj-hub/claude-email-sequence.git
 cd claude-email-sequence
-```
-
-For Python scripts:
-
-```bash
-# All scripts are zero-dep Python 3.8+ — just run them
 python3 scripts/score.py --help
 python3 scripts/score.py --file examples/lifecycle-good.json
 python3 scripts/score.py --file examples/lifecycle-refused.json
@@ -53,8 +48,7 @@ python3 scripts/score.py --file examples/lifecycle-refused.json
 - [ ] If you touch a script, smoke-test it and paste output in the PR
 - [ ] If you add a new sub-skill, list it in the README companion table
 - [ ] Examples stay paired: one good exit-0 draft, one refused exit-1
-- [ ] No new dependencies (any of: pip packages, npm packages, API
-      keys, paid services)
+- [ ] No new dependencies (pip packages or npm packages)
 
 ## Reporting calibration issues with scoring scripts
 
