@@ -16,13 +16,17 @@ The good draft passes. A generic drip fails the score.
 
 The build guide teaches a human. The pack teaches an agent.
 
-The scorer is Python in this repo. It does not call a paid API. Host paths are on the [Skill packs catalog](https://jaymountconsulting.com/skills).
+## Install
+
+This pack is the files in this repository. Open the tree on the host you already run. There is no remote installer.
+
+The scorer is Python in this repo. Host paths are on the [Skill packs catalog](https://jaymountconsulting.com/skills).
 
 ## What you walk out with in 15 minutes
 
 Artifact: `examples/lifecycle-good.json`.
 
-```bash
+```
 python3 scripts/score.py --file examples/lifecycle-good.json
 python3 scripts/score.py --file examples/lifecycle-refused.json
 ```
