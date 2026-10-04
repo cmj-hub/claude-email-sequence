@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Score a lifecycle email: welcome, bargain, then nurture on the pain.
+"""Score a lifecycle email: three notes, each with a subject, a time, and a body.
+
+Welcome, then the bargain, then nurture on the pain. Refuses a generic drip
+and a cold email. A non-empty draft still fails when the notes are not three,
+the welcome is not for someone who opted in, the nurture subject drops the
+pain, the timing is not three times, or a timing number is not labeled example.
 
 Stdlib only. No network. Does not send.
 
@@ -96,25 +101,74 @@ def main() -> int:
         fail_input("JSON must be an object")
 
     pain = nonempty_text(data.get("pain"))
+    welcome_subject = nonempty_text(data.get("welcome_subject"))
+    welcome_when = nonempty_text(data.get("welcome_when"))
     welcome = nonempty_text(data.get("welcome"))
+    bargain_subject = nonempty_text(data.get("bargain_subject"))
+    bargain_when = nonempty_text(data.get("bargain_when"))
     bargain = nonempty_text(data.get("bargain"))
+    nurture_subject = nonempty_text(data.get("nurture_subject"))
+    nurture_when = nonempty_text(data.get("nurture_when"))
     nurture = nonempty_text(data.get("nurture"))
-    blob = "\n".join([welcome, bargain, nurture])
+    fields = (
+        pain,
+        welcome_subject,
+        welcome_when,
+        welcome,
+        bargain_subject,
+        bargain_when,
+        bargain,
+        nurture_subject,
+        nurture_when,
+        nurture,
+    )
+    blob = "\n".join(fields)
 
     if refused(blob):
         print(REFUSAL)
         return 1
 
-    if not pain or not welcome or not bargain or not nurture:
+    if any(not value for value in fields):
         print("draft is incomplete")
         return 1
 
     if pain.lower() not in nurture.lower():
         print(REFUSAL)
         return 1
+    if len({welcome, bargain, nurture}) < 3:
+        print("the notes are not three")
+        return 1
+    if len({welcome_subject.lower(), bargain_subject.lower(), nurture_subject.lower()}) < 3:
+        print("subjects are not three notes")
+        return 1
+    if not re.search(r"\b(asked|opted|opt-in|opt in)\b", welcome, re.IGNORECASE):
+        print("welcome is not for someone who opted in")
+        return 1
+    if pain.lower() not in nurture_subject.lower():
+        print("nurture does not name the pain")
+        return 1
+    timing_ok = (
+        re.search(r"opt", welcome_when, re.IGNORECASE)
+        and re.search(r"\bnext\b", bargain_when, re.IGNORECASE)
+        and re.search(r"\bafter\b", nurture_when, re.IGNORECASE)
+    )
+    if not timing_ok:
+        print("timing is not three notes")
+        return 1
+    for when in (welcome_when, bargain_when, nurture_when):
+        if re.search(r"\d", when) and "example" not in when.lower():
+            print("timing number is not labeled example")
+            return 1
 
+    print(f"pain: {pain}")
+    print(f"welcome subject: {welcome_subject}")
+    print(f"welcome when: {welcome_when}")
     print(f"welcome: {welcome}")
+    print(f"bargain subject: {bargain_subject}")
+    print(f"bargain when: {bargain_when}")
     print(f"bargain: {bargain}")
+    print(f"nurture subject: {nurture_subject}")
+    print(f"nurture when: {nurture_when}")
     print(f"nurture: {nurture}")
     return 0
 

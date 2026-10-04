@@ -2,7 +2,7 @@
   "name": "email-sequence",
   "icon": ".claude-plugin/icon.png",
   "version": "0.3.0",
-  "description": "An email sequence is the series of emails after someone raises their hand.",
+  "description": "An email sequence is three notes after someone raises their hand: welcome, the bargain, then nurture.",
   "author": {
     "name": "Jay Mount Consulting"
   },

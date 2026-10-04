@@ -1,6 +1,12 @@
 {
   "pain": "the trial dies after the first login",
-  "welcome": "You asked for the trial checklist. This note starts there.",
-  "bargain": "The checklist is the bargain. It is attached, the thing you opted in to receive.",
-  "nurture": "The next note stays on the pain you showed: the trial dies after the first login."
+  "welcome_subject": "You asked for the trial checklist",
+  "welcome_when": "The day they opt in. Example timing, replace this: within 1 hour.",
+  "welcome": "You asked for the trial checklist. This note starts there. The checklist is the thing you asked for, and the next note hands it over.",
+  "bargain_subject": "The checklist is attached",
+  "bargain_when": "The next morning. Example timing, replace this: 1 morning after the welcome.",
+  "bargain": "The checklist is the bargain. It is attached, the thing you opted in to receive. Work the first box on the trial you already have.",
+  "nurture_subject": "The trial dies after the first login",
+  "nurture_when": "After the bargain is in their hands. Example timing, replace this: 2 mornings after the bargain.",
+  "nurture": "The next note stays on the pain you showed: the trial dies after the first login. The step that dies is the step after the first login. Do that step once, from the checklist you already have."
 }

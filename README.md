@@ -31,7 +31,7 @@ python3 scripts/score.py --file examples/lifecycle-good.json
 python3 scripts/score.py --file examples/lifecycle-refused.json
 ```
 
-The good draft exits 0 and prints the welcome, the bargain, and the nurture. The refused draft exits 1. Then drop in yours.
+The good draft exits 0 and prints three notes. Each note has a subject, a time, and a body: welcome, then the bargain, then nurture. The refused draft exits 1. Then drop in yours.
 
 ## What this pack will not do
 
