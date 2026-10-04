@@ -38,6 +38,7 @@ cd claude-email-sequence
 python3 scripts/score.py --help
 python3 scripts/score.py --file examples/lifecycle-good.json
 python3 scripts/score.py --file examples/lifecycle-refused.json
+python3 -m unittest discover -s tests
 ```
 
 ## Pull-request checklist
@@ -45,7 +46,9 @@ python3 scripts/score.py --file examples/lifecycle-refused.json
 - [ ] Skill names follow the spec (lowercase, hyphens, ≤64 chars,
       directory matches `name:` in frontmatter)
 - [ ] Sub-skill descriptions include trigger phrases inline
+- [ ] `python3 -m unittest discover -s tests` passes
 - [ ] If you touch a script, smoke-test it and paste output in the PR
+- [ ] If you bump behavior, bump `version` in `.claude-plugin/plugin.json`
 - [ ] If you add a new sub-skill, list it in the README companion table
 - [ ] Examples stay paired: one good exit-0 draft, one refused exit-1
 - [ ] No new dependencies (pip packages or npm packages)
@@ -56,8 +59,8 @@ If `scripts/score.py` scores something obviously wrong:
 
 1. Paste the input JSON that produced the wrong result
 2. State your expected exit code + actual exit code (and printed parts)
-3. Note which gate misfired (generic drip, cold email, missing part,
-   or pain mismatch)
+3. Note which gate misfired — the scorer prints it on each `- ` line
+   (generic drip, cold email, missing, or pain mismatch)
 
 Keep the deterministic path stable. Prefer new paired examples under
 `examples/` over rewriting the scorer for one-off cases.
