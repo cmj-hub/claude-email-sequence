@@ -161,7 +161,7 @@ class ScoreSubjectsAndNotes(unittest.TestCase):
 
 class PackLayout(unittest.TestCase):
     def frontmatter(self):
-        text = (ROOT / "SKILL.md").read_text()
+        text = (ROOT / "skills" / "lifecycle-email" / "SKILL.md").read_text()
         match = re.match(r"---\n(.*?)\n---\n", text, re.DOTALL)
         self.assertIsNotNone(match, "SKILL.md needs YAML frontmatter")
         fields = {}
@@ -174,13 +174,37 @@ class PackLayout(unittest.TestCase):
         fields = self.frontmatter()
         self.assertRegex(fields["name"], r"^[a-z0-9-]{1,64}$")
         self.assertTrue(0 < len(fields["description"]) <= 1024)
-        self.assertLessEqual(set(fields), {"name", "description", "license", "allowed-tools", "metadata", "models"})
+        self.assertLessEqual(set(fields), {"name", "description", "license", "allowed-tools", "argument-hint", "metadata", "models"})
 
     def test_plugin_manifest(self):
         manifest = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())
         self.assertRegex(manifest["name"], r"^[a-z0-9-]+$")
         self.assertRegex(manifest["version"], r"^\d+\.\d+\.\d+$")
         self.assertTrue((ROOT / manifest["icon"]).is_file())
+        self.assertNotIn("skills", manifest)
+
+
+class CliConvention(unittest.TestCase):
+    def test_refusal_lines_say_what_to_change(self):
+        result = run(["--file", str(ROOT / "examples" / "lifecycle-refused.json")])
+        self.assertEqual(result.returncode, 1)
+        lines = result.stdout.strip().splitlines()
+        self.assertEqual(lines[-1], "Next: fix the lines above and run this again.")
+        for line in lines[1:-1]:
+            self.assertRegex(line, r"^- .+ \u2192 .+")
+
+    def test_pass_names_next_step(self):
+        result = run(["--file", str(ROOT / "examples" / "lifecycle-good.json")])
+        self.assertEqual(result.stdout.strip().splitlines()[-1], "Next: /gtm:next")
+
+    def test_json_fixes_parallel_to_reasons(self):
+        body = json.loads(run(["--file", str(ROOT / "examples" / "lifecycle-refused.json"), "--json"]).stdout)
+        self.assertEqual(len(body["fixes"]), len(body["reasons"]))
+        self.assertIn("run this again", body["next"])
+
+    def test_help_and_input_alias(self):
+        self.assertIn("examples/lifecycle-good.json", run(["--help"]).stdout)
+        self.assertEqual(run(["--input", str(ROOT / "examples" / "lifecycle-good.json")]).returncode, 0)
 
 
 if __name__ == "__main__":

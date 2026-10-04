@@ -1,7 +1,8 @@
 ---
 name: lifecycle-email
 description: "Draft a lifecycle email sequence as a welcome, delivery of the bargain, then nurture tied to the pain they showed, and score it with a local script. Use when someone already opted in (signup, lead magnet, trial, waitlist, demo request) and you need a welcome email, onboarding sequence, or nurture sequence that is not a generic drip. Not for cold outreach or re-engaging prospects who never opted in (use cold-email)."
-allowed-tools: Read Write Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/score.py:*)
+argument-hint: "[the pain they showed | score]"
+allowed-tools: Read Write Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score.py:*)
 models: ""
 ---
 
@@ -10,6 +11,10 @@ models: ""
 Someone raised a hand. The sequence has three parts, in this order. Welcome them. Hand over the thing they opted in for. Then keep writing about the pain they already showed.
 
 The build guide teaches a human. This pack teaches an agent.
+
+## Start
+
+If `$ARGUMENTS` is `score`, run the scorer on `gtm/sequence.json` and report each line. Otherwise `$ARGUMENTS` is the pain they showed, or empty; draft the sequence with the checklist below. The draft lives at `gtm/sequence.json`; create `gtm/` if missing.
 
 ## From brand-config.json
 
@@ -40,14 +45,14 @@ Copy this list and tick it in order.
 
 - [ ] 1. Name the pain they showed.
 - [ ] 2. Fill the sequence shell: welcome, bargain, nurture.
-- [ ] 3. Write the draft to `draft.json` and run `python3 ${CLAUDE_SKILL_DIR}/scripts/score.py --file draft.json`.
+- [ ] 3. Write the draft to `gtm/sequence.json` (create `gtm/` if missing) and run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score.py --file gtm/sequence.json`.
 - [ ] 4. Fix every line the scorer prints under the verdict, then run it again.
 
 Check again until the script exits 0. Show the user the three parts it prints.
 
 ## Reading a failure
 
-The first line is the verdict. Each line under it names one gate and the field that tripped it. Fix them all before the next run.
+The first line is the verdict. Each line under it reads `- gate: field → what to change`. The last line is `Next: fix the lines above and run this again.` Fix them all before the next run.
 
 | Line | Fix |
 | --- | --- |
@@ -66,15 +71,15 @@ Do not game the scorer by swapping a flagged phrase for a synonym. If the note i
 ## Run
 
 ```
-python3 ${CLAUDE_SKILL_DIR}/scripts/score.py --file ${CLAUDE_SKILL_DIR}/examples/lifecycle-good.json
-python3 ${CLAUDE_SKILL_DIR}/scripts/score.py --file ${CLAUDE_SKILL_DIR}/examples/lifecycle-refused.json
-python3 ${CLAUDE_SKILL_DIR}/scripts/score.py --file ${CLAUDE_SKILL_DIR}/examples/lifecycle-subjects.json
-python3 ${CLAUDE_SKILL_DIR}/scripts/score.py --file ${CLAUDE_SKILL_DIR}/examples/lifecycle-subjects-refused.json
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score.py --file ${CLAUDE_PLUGIN_ROOT}/examples/lifecycle-good.json
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score.py --file ${CLAUDE_PLUGIN_ROOT}/examples/lifecycle-refused.json
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score.py --file ${CLAUDE_PLUGIN_ROOT}/examples/lifecycle-subjects.json
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score.py --file ${CLAUDE_PLUGIN_ROOT}/examples/lifecycle-subjects-refused.json
 ```
 
-Paths are relative to this skill's folder. In Claude Code that folder is `${CLAUDE_SKILL_DIR}`.
+`${CLAUDE_PLUGIN_ROOT}` is the plugin's folder; from a clone, run the same commands from the repo root without the prefix.
 
-The good file exits 0 and prints the welcome, the bargain, and the nurture. The subjects file also passes and prints each subject. The refused files exit 1 and list each gate they failed. Add `--json` for one machine-readable result object, or pipe the draft with `--stdin`.
+The good file exits 0 and prints the welcome, the bargain, the nurture, and `Next: /gtm:next`. The subjects file also passes and prints each subject. The refused files exit 1 and list each gate they failed. Add `--json` for one result object (`pass`, `verdict`, `reasons`, `fixes` parallel to `reasons`, `next`), or pipe the draft with `--stdin`.
 
 The JSON object has four strings: `pain`, `welcome`, `bargain`, and `nurture`, plus the three optional subject strings. A broken JSON exits non-zero and does not echo the raw input.
 
@@ -85,11 +90,11 @@ Python 3 standard library only. No network. No send.
 This is step 8 of the GTM operator suite (`/plugin marketplace add cmj-hub/gtm-operator-skills`).
 
 - **Reads:** `psp.vocabulary` and `evp` from `brand-config.json`, if present.
-- **Writes:** nothing outside the draft. It never touches another pack's keys.
+- **Writes:** `gtm/sequence.json` only. It never touches another pack's keys.
 - **Before this:** landing-page (`/landing-page:page`), when there is no opt-in page yet.
 - **Not this:** cold outreach to people who never opted in goes to cold-email (`/cold-email:cold-email`). Re-engaging stalled cold prospects is `cold-email-nurture` in that pack.
 
-If a companion pack is not installed, name it and its install line (`/plugin install <name>@gtm-operator-skills`); do not do its job inline.
+When the sequence passes, end with `Next: /gtm:next` (the suite hub names what is left). If a companion pack is not installed, name it and its install line (`/plugin install <name>@gtm-operator-skills`); do not do its job inline.
 
 ## Example draft
 

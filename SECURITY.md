@@ -5,7 +5,7 @@
 - One script runs: `scripts/score.py`, Python 3 standard library only, on your machine.
 - The script reads only the draft JSON you pass with `--file` or `--stdin`. It caps input at 2 MB and does not echo bad input.
 - The skill reads `brand-config.json` at your project root, if present, for `psp.vocabulary` and `evp`. It never writes to it or to `SOUL.md`.
-- The skill writes one file: the draft (`draft.json`) in your project. Nothing else is created.
+- The skill writes one file: the draft (`gtm/sequence.json`) in your project. Nothing else is created.
 - Network: None. No script opens a network connection.
 - No telemetry. No credentials are asked for or stored.
 - Nothing is sent, posted, or published. Your email tool sends the sequence; this pack only scores the draft.
