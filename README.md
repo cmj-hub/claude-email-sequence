@@ -18,7 +18,20 @@ The build guide teaches a human. The pack teaches an agent.
 
 ## Install
 
-This pack is the files in this repository. Open the tree on the host you already run. There is no remote installer.
+In Claude Code, install it from the suite marketplace:
+
+```
+/plugin marketplace add cmj-hub/gtm-operator-skills
+/plugin install email-sequence@gtm-operator-skills
+```
+
+Other agents (Codex, Cursor, and the rest) can install it with the skills CLI:
+
+```
+npx skills add cmj-hub/claude-email-sequence --all -g --full-depth
+```
+
+Or clone the repository and open the tree on the host you already run.
 
 The scorer is Python in this repo. Host paths are on the [Skill packs catalog](https://jaymountconsulting.com/skills).
 
