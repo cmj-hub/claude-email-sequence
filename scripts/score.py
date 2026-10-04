@@ -8,7 +8,8 @@ Stdlib only. No network. Does not send.
   python3 scripts/score.py --file draft.json --json
 
 Exit 0: welcome, bargain, and nurture pass.
-Exit 1: refused (generic drip, cold email, pain mismatch) or incomplete.
+Exit 1: refused (generic drip, cold email, pain mismatch, repeated notes or
+subjects, no opt-in in the welcome) or incomplete.
 Exit 2: the input could not be read as a JSON object.
 """
 
@@ -30,6 +31,11 @@ DRIP_RE = re.compile(
 )
 COLD_RE = re.compile(
     r"cold email|never opted|stranger|\bintroduce our\b|first touch",
+    re.IGNORECASE,
+)
+OPT_IN_RE = re.compile(
+    r"\b(?:asked|requested|opted|opt[- ]?in|signed up|sign[- ]?up|subscribed"
+    r"|downloaded|registered|joined)\b",
     re.IGNORECASE,
 )
 
@@ -83,6 +89,7 @@ def load_payload(args: argparse.Namespace) -> object:
 
 FIELDS = ("pain", "welcome", "bargain", "nurture")
 PARTS = ("welcome", "bargain", "nurture")
+SUBJECTS = ("welcome_subject", "bargain_subject", "nurture_subject")
 QUOTES = str.maketrans({"\u2018": "'", "\u2019": "'", "\u201c": '"', "\u201d": '"'})
 
 
@@ -102,20 +109,37 @@ def refused(blob: str) -> bool:
 
 
 def check(data: dict) -> tuple[dict, list[str]]:
-    """Return the cleaned parts and every reason the draft fails, in gate order."""
-    parts = {key: nonempty_text(data.get(key)) for key in FIELDS}
+    """Return the cleaned parts and every reason the draft fails, in gate order.
+
+    Subjects are optional. Once any subject is given, all three are required.
+    """
+    parts = {key: nonempty_text(data.get(key)) for key in FIELDS + SUBJECTS}
+    has_subjects = any(data.get(key) is not None for key in SUBJECTS)
     reasons = []
-    for key in PARTS:
+    scanned = PARTS + SUBJECTS if has_subjects else PARTS
+    for key in scanned:
         for label, pattern in (("generic drip", DRIP_RE), ("cold email", COLD_RE)):
             match = pattern.search(parts[key])
             if match:
                 reasons.append(f'{label}: {key} says "{match.group(0)}"')
-    missing = [key for key in FIELDS if not parts[key]]
+    required = FIELDS + SUBJECTS if has_subjects else FIELDS
+    missing = [key for key in required if not parts[key]]
     if missing:
         reasons.append("missing: " + ", ".join(missing))
     pain = normalize(parts["pain"]).rstrip(".!?;:, ")
     if pain and parts["nurture"] and pain not in normalize(parts["nurture"]):
         reasons.append("pain mismatch: nurture does not repeat the pain in their words")
+    bodies = [normalize(parts[key]) for key in PARTS if parts[key]]
+    if len(bodies) == len(PARTS) and len(set(bodies)) < len(PARTS):
+        reasons.append("not three notes: welcome, bargain, and nurture repeat each other")
+    if parts["welcome"] and not OPT_IN_RE.search(parts["welcome"]):
+        reasons.append("no opt-in: welcome does not say they asked, opted in, or signed up")
+    if has_subjects:
+        subjects = [normalize(parts[key]) for key in SUBJECTS if parts[key]]
+        if len(subjects) == len(SUBJECTS) and len(set(subjects)) < len(SUBJECTS):
+            reasons.append("subjects repeat: each note needs its own subject")
+        if pain and parts["nurture_subject"] and pain not in normalize(parts["nurture_subject"]):
+            reasons.append("pain mismatch: nurture_subject does not name the pain in their words")
     return parts, reasons
 
 
@@ -145,7 +169,7 @@ def main() -> int:
     if args.json:
         result = {"pass": not reasons, "verdict": status, "reasons": reasons}
         if not reasons:
-            result.update({key: parts[key] for key in PARTS})
+            result.update({key: parts[key] for key in PARTS + SUBJECTS if parts[key]})
         print(json.dumps(result, ensure_ascii=False))
         return 0 if not reasons else 1
 
@@ -156,6 +180,9 @@ def main() -> int:
         return 1
 
     for key in PARTS:
+        subject = parts[f"{key}_subject"]
+        if subject:
+            print(f"{key} subject: {subject}")
         print(f"{key}: {parts[key]}")
     return 0
 

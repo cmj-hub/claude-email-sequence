@@ -55,9 +55,10 @@ a generic drip and a cold email
 - generic drip: nurture says "generic drip"
 - cold email: nurture says "cold email"
 - pain mismatch: nurture does not repeat the pain in their words
+- no opt-in: welcome does not say they asked, opted in, or signed up
 ```
 
-Then drop in yours. Add `--json` when another tool reads the result.
+Then drop in yours. Add `--json` when another tool reads the result. `examples/lifecycle-subjects.json` adds the optional subject lines.
 
 ## What this pack will not do
 
@@ -91,6 +92,10 @@ No. It scores the draft. Your email tool sends it.
 Previous: [Cold email](https://github.com/cmj-hub/claude-cold-email)
 
 Next: [Sales prospecting](https://github.com/cmj-hub/claude-prospect-list)
+
+## Privacy and security
+
+The scorer is local Python 3 standard library. It reads the draft JSON you pass it and nothing else; the skill reads `brand-config.json` if present and writes no file outside your draft. No script opens a network connection. No telemetry, no credentials, and nothing is sent. See [SECURITY.md](SECURITY.md).
 
 ## License
 

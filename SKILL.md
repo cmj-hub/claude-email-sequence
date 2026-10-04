@@ -1,6 +1,7 @@
 ---
 name: lifecycle-email
 description: "Draft a lifecycle email sequence as a welcome, delivery of the bargain, then nurture tied to the pain they showed, and score it with a local script. Use when someone already opted in (signup, lead magnet, trial, waitlist, demo request) and you need a welcome email, onboarding sequence, or nurture sequence that is not a generic drip. Not for cold outreach or re-engaging prospects who never opted in (use cold-email)."
+allowed-tools: Read Write Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/score.py:*)
 models: ""
 ---
 
@@ -21,7 +22,7 @@ The pain they showed on the form or in the reply still wins over the profile. If
 
 ## The three parts
 
-1. Welcome. The first note after the opt-in. It names that they asked, and it starts the relationship. It is not an introduction to a stranger.
+1. Welcome. The first note after the opt-in. It names that they asked (asked, requested, opted in, signed up, downloaded), and it starts the relationship. It is not an introduction to a stranger.
 2. Bargain. Delivery of the thing they were promised: the checklist, the sample, the access. The bargain is the exchange, handed over.
 3. Nurture. Later notes that stay on the pain they showed on the form or in the reply. The pain is in the words. A calendar of tips is not nurture.
 
@@ -29,7 +30,9 @@ The pain they showed on the form or in the reply still wins over the profile. If
 
 The scorer refuses a generic drip and a cold email. A generic drip is a day-1, day-3, day-7 tip series, or a note that calls itself a generic drip. A cold email speaks to someone who never opted in, introduces a product to a stranger, or is labeled a cold email.
 
-A welcome can be short. It still has to be for a person who opted in, and the nurture still has to name their pain.
+A welcome can be short. It still has to be for a person who opted in, and the nurture still has to name their pain. The three bodies must be three different notes.
+
+Subjects are optional: `welcome_subject`, `bargain_subject`, `nurture_subject`. Give all three or none. They must differ, and the nurture subject must name the pain.
 
 ## Checklist
 
@@ -50,8 +53,11 @@ The first line is the verdict. Each line under it names one gate and the field t
 | --- | --- |
 | `generic drip: <part> says "..."` | Drop the day-1/day-3/day-7 schedule or tip-series framing. Write to their pain, not the calendar. |
 | `cold email: <part> says "..."` | They opted in. Stop introducing the product to a stranger; name what they asked for. |
-| `missing: <fields>` | Fill every one of `pain`, `welcome`, `bargain`, `nurture` with text. |
-| `pain mismatch` | Repeat the `pain` phrase inside `nurture`, in their words. Case, spacing, and end punctuation do not matter. |
+| `missing: <fields>` | Fill every one of `pain`, `welcome`, `bargain`, `nurture` with text, and all three subjects once one is given. |
+| `pain mismatch` | Repeat the `pain` phrase inside `nurture` (and `nurture_subject`, if given), in their words. Case, spacing, and end punctuation do not matter. |
+| `not three notes` | Welcome, bargain, and nurture are the same text. Write each one for its own job. |
+| `no opt-in` | Say in the welcome that they asked, requested, opted in, signed up, or downloaded. |
+| `subjects repeat` | Give each note its own subject line. |
 
 Exit 0 passes. Exit 1 is refused or incomplete. Exit 2 means the input was not a readable JSON object.
 
@@ -62,13 +68,15 @@ Do not game the scorer by swapping a flagged phrase for a synonym. If the note i
 ```
 python3 ${CLAUDE_SKILL_DIR}/scripts/score.py --file ${CLAUDE_SKILL_DIR}/examples/lifecycle-good.json
 python3 ${CLAUDE_SKILL_DIR}/scripts/score.py --file ${CLAUDE_SKILL_DIR}/examples/lifecycle-refused.json
+python3 ${CLAUDE_SKILL_DIR}/scripts/score.py --file ${CLAUDE_SKILL_DIR}/examples/lifecycle-subjects.json
+python3 ${CLAUDE_SKILL_DIR}/scripts/score.py --file ${CLAUDE_SKILL_DIR}/examples/lifecycle-subjects-refused.json
 ```
 
 Paths are relative to this skill's folder. In Claude Code that folder is `${CLAUDE_SKILL_DIR}`.
 
-The good file exits 0 and prints the welcome, the bargain, and the nurture. The refused file exits 1 and lists each gate it failed. Add `--json` for one machine-readable result object, or pipe the draft with `--stdin`.
+The good file exits 0 and prints the welcome, the bargain, and the nurture. The subjects file also passes and prints each subject. The refused files exit 1 and list each gate they failed. Add `--json` for one machine-readable result object, or pipe the draft with `--stdin`.
 
-The JSON object has four strings: `pain`, `welcome`, `bargain`, and `nurture`. A broken JSON exits non-zero and does not echo the raw input.
+The JSON object has four strings: `pain`, `welcome`, `bargain`, and `nurture`, plus the three optional subject strings. A broken JSON exits non-zero and does not echo the raw input.
 
 Python 3 standard library only. No network. No send.
 
