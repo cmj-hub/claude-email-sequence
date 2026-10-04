@@ -110,7 +110,7 @@ class PackLayout(unittest.TestCase):
         fields = self.frontmatter()
         self.assertRegex(fields["name"], r"^[a-z0-9-]{1,64}$")
         self.assertTrue(0 < len(fields["description"]) <= 1024)
-        self.assertLessEqual(set(fields), {"name", "description", "license", "allowed-tools", "metadata"})
+        self.assertLessEqual(set(fields), {"name", "description", "license", "allowed-tools", "metadata", "models"})
 
     def test_plugin_manifest(self):
         manifest = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())

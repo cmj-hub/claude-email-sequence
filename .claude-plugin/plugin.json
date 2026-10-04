@@ -1,22 +1,25 @@
 {
   "name": "email-sequence",
-  "icon": ".claude-plugin/icon.png",
-  "version": "0.4.0",
-  "description": "An email sequence is the series of emails after someone raises their hand.",
+  "version": "0.5.0",
+  "description": "Draft and score the email sequence after someone opts in: welcome, bargain, nurture. Use when someone already raised their hand. Not for cold outreach.",
   "author": {
     "name": "Jay Mount Consulting",
     "url": "https://jaymountconsulting.com"
   },
-  "license": "MIT",
   "homepage": "https://jaymountconsulting.com/skills",
   "repository": "https://github.com/cmj-hub/claude-email-sequence",
+  "license": "MIT",
   "keywords": [
-    "email",
     "email-sequence",
     "lifecycle-email",
     "welcome-email",
     "nurture",
     "onboarding",
-    "marketing"
+    "marketing",
+    "gtm"
+  ],
+  "icon": ".claude-plugin/icon.png",
+  "skills": [
+    "./"
   ]
 }
