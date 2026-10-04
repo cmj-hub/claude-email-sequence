@@ -95,6 +95,70 @@ class ScoreLifecycle(unittest.TestCase):
         self.assertEqual(both.returncode, 2)
 
 
+SUBJECTS = json.loads((ROOT / "examples" / "lifecycle-subjects.json").read_text())
+
+
+class ScoreSubjectsAndNotes(unittest.TestCase):
+    def test_subjects_example_passes_and_prints_subjects(self):
+        result = run(["--file", str(ROOT / "examples" / "lifecycle-subjects.json")])
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertIn("welcome subject: You asked for the trial checklist", result.stdout)
+        self.assertIn("nurture subject: When the trial dies after the first login", result.stdout)
+        body = json.loads(run(["--file", str(ROOT / "examples" / "lifecycle-subjects.json"), "--json"]).stdout)
+        self.assertEqual(body["nurture_subject"], SUBJECTS["nurture_subject"])
+
+    def test_subjects_refused_example_names_each_gate(self):
+        result = run(["--file", str(ROOT / "examples" / "lifecycle-subjects-refused.json")])
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("- not three notes:", result.stdout)
+        self.assertIn("- subjects repeat:", result.stdout)
+        self.assertIn("- no opt-in:", result.stdout)
+        self.assertIn("- pain mismatch: nurture_subject", result.stdout)
+
+    def test_bodies_must_differ(self):
+        draft = dict(GOOD, bargain=GOOD["welcome"].upper())
+        result = run(["--stdin"], stdin=json.dumps(draft))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("- not three notes:", result.stdout)
+
+    def test_welcome_must_reference_opt_in(self):
+        draft = dict(GOOD, welcome="Here is the trial checklist. This note starts there.")
+        result = run(["--stdin"], stdin=json.dumps(draft))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("- no opt-in:", result.stdout)
+        for phrase in ("You signed up for", "You requested", "You downloaded", "Thanks for your opt-in to"):
+            draft = dict(GOOD, welcome=phrase + " the trial checklist.")
+            result = run(["--stdin"], stdin=json.dumps(draft))
+            self.assertEqual(result.returncode, 0, phrase + ": " + result.stdout)
+
+    def test_one_subject_requires_all_three(self):
+        draft = dict(GOOD, welcome_subject="You asked for the trial checklist")
+        result = run(["--stdin"], stdin=json.dumps(draft))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("draft is incomplete", result.stdout)
+        self.assertIn("- missing: bargain_subject, nurture_subject", result.stdout)
+
+    def test_subjects_must_differ(self):
+        draft = dict(SUBJECTS, bargain_subject=" you asked for the TRIAL checklist ")
+        result = run(["--stdin"], stdin=json.dumps(draft))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("- subjects repeat:", result.stdout)
+
+    def test_nurture_subject_names_pain(self):
+        draft = dict(SUBJECTS, nurture_subject="Checking in")
+        result = run(["--stdin"], stdin=json.dumps(draft))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("- pain mismatch: nurture_subject", result.stdout)
+        draft = dict(SUBJECTS, nurture_subject="The Trial  dies after the first login?")
+        self.assertEqual(run(["--stdin"], stdin=json.dumps(draft)).returncode, 0)
+
+    def test_subjects_are_scanned_for_drip_and_cold(self):
+        draft = dict(SUBJECTS, bargain_subject="Day 3 tip")
+        result = run(["--stdin"], stdin=json.dumps(draft))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn('- generic drip: bargain_subject says "Day 3"', result.stdout)
+
+
 class PackLayout(unittest.TestCase):
     def frontmatter(self):
         text = (ROOT / "SKILL.md").read_text()
