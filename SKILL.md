@@ -1,7 +1,6 @@
 ---
 name: lifecycle-email
-description: "Draft a lifecycle email as a welcome, delivery of the bargain, then nurture tied to the pain they showed. Use when someone already opted in and the sequence must not be a generic drip or a cold email."
-models: ""
+description: "Draft a lifecycle email sequence as a welcome, delivery of the bargain, then nurture tied to the pain they showed, and score it with a local script. Use when someone already opted in (signup, lead magnet, trial, waitlist, demo request) and you need a welcome email, onboarding sequence, or nurture sequence that is not a generic drip or a cold email."
 ---
 
 # Lifecycle email
@@ -28,11 +27,25 @@ Copy this list and tick it in order.
 
 - [ ] 1. Name the pain they showed.
 - [ ] 2. Fill the sequence shell: welcome, bargain, nurture.
-- [ ] 3. Run `python3 scripts/score.py --file draft.json`.
+- [ ] 3. Write the draft to `draft.json` and run `python3 scripts/score.py --file draft.json`.
+- [ ] 4. Fix every line the scorer prints under the verdict, then run it again.
 
-Check again until the script exits 0.
+Check again until the script exits 0. Show the user the three parts it prints.
 
-Go back to step 2 if step 3 fails.
+## Reading a failure
+
+The first line is the verdict. Each line under it names one gate and the field that tripped it. Fix them all before the next run.
+
+| Line | Fix |
+| --- | --- |
+| `generic drip: <part> says "..."` | Drop the day-1/day-3/day-7 schedule or tip-series framing. Write to their pain, not the calendar. |
+| `cold email: <part> says "..."` | They opted in. Stop introducing the product to a stranger; name what they asked for. |
+| `missing: <fields>` | Fill every one of `pain`, `welcome`, `bargain`, `nurture` with text. |
+| `pain mismatch` | Repeat the `pain` phrase inside `nurture`, in their words. Case, spacing, and end punctuation do not matter. |
+
+Exit 0 passes. Exit 1 is refused or incomplete. Exit 2 means the input was not a readable JSON object.
+
+Do not game the scorer by swapping a flagged phrase for a synonym. If the note is a drip or a cold email, rewrite it.
 
 ## Run
 
@@ -41,7 +54,9 @@ python3 scripts/score.py --file examples/lifecycle-good.json
 python3 scripts/score.py --file examples/lifecycle-refused.json
 ```
 
-The good file exits 0 and prints the welcome, the bargain, and the nurture. The refused file exits 1.
+Paths are relative to this skill's folder. In Claude Code that folder is `${CLAUDE_SKILL_DIR}`.
+
+The good file exits 0 and prints the welcome, the bargain, and the nurture. The refused file exits 1 and lists each gate it failed. Add `--json` for one machine-readable result object, or pipe the draft with `--stdin`.
 
 The JSON object has four strings: `pain`, `welcome`, `bargain`, and `nurture`. A broken JSON exits non-zero and does not echo the raw input.
 

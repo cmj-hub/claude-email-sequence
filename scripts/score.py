@@ -5,6 +5,11 @@ Stdlib only. No network. Does not send.
 
   python3 scripts/score.py --file draft.json
   python3 scripts/score.py --stdin
+  python3 scripts/score.py --file draft.json --json
+
+Exit 0: welcome, bargain, and nurture pass.
+Exit 1: refused (generic drip, cold email, pain mismatch) or incomplete.
+Exit 2: the input could not be read as a JSON object.
 """
 
 from __future__ import annotations
@@ -76,46 +81,82 @@ def load_payload(args: argparse.Namespace) -> object:
         fail_input("invalid JSON")
 
 
+FIELDS = ("pain", "welcome", "bargain", "nurture")
+PARTS = ("welcome", "bargain", "nurture")
+QUOTES = str.maketrans({"\u2018": "'", "\u2019": "'", "\u201c": '"', "\u201d": '"'})
+
+
 def nonempty_text(value: object) -> str:
     if isinstance(value, str) and value.strip():
         return value.strip()
     return ""
 
 
+def normalize(text: str) -> str:
+    """Lowercase, straighten quotes, and collapse whitespace."""
+    return " ".join(text.translate(QUOTES).lower().split())
+
+
 def refused(blob: str) -> bool:
     return DRIP_RE.search(blob) is not None or COLD_RE.search(blob) is not None
 
 
+def check(data: dict) -> tuple[dict, list[str]]:
+    """Return the cleaned parts and every reason the draft fails, in gate order."""
+    parts = {key: nonempty_text(data.get(key)) for key in FIELDS}
+    reasons = []
+    for key in PARTS:
+        for label, pattern in (("generic drip", DRIP_RE), ("cold email", COLD_RE)):
+            match = pattern.search(parts[key])
+            if match:
+                reasons.append(f'{label}: {key} says "{match.group(0)}"')
+    missing = [key for key in FIELDS if not parts[key]]
+    if missing:
+        reasons.append("missing: " + ", ".join(missing))
+    pain = normalize(parts["pain"]).rstrip(".!?;:, ")
+    if pain and parts["nurture"] and pain not in normalize(parts["nurture"]):
+        reasons.append("pain mismatch: nurture does not repeat the pain in their words")
+    return parts, reasons
+
+
+def verdict(reasons: list[str]) -> str:
+    if not reasons:
+        return "pass"
+    if all(reason.startswith("missing:") for reason in reasons):
+        return "draft is incomplete"
+    return REFUSAL
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Score a lifecycle email draft")
+    parser = argparse.ArgumentParser(
+        description="Score a lifecycle email draft. Exit 0 pass, 1 refused or incomplete, 2 bad input."
+    )
     parser.add_argument("--file", help="Path to a JSON object")
     parser.add_argument("--stdin", action="store_true", help="Read a JSON object from stdin")
+    parser.add_argument("--json", action="store_true", help="Print the result as one JSON object")
     args = parser.parse_args()
     data = load_payload(args)
     if not isinstance(data, dict):
         fail_input("JSON must be an object")
 
-    pain = nonempty_text(data.get("pain"))
-    welcome = nonempty_text(data.get("welcome"))
-    bargain = nonempty_text(data.get("bargain"))
-    nurture = nonempty_text(data.get("nurture"))
-    blob = "\n".join([welcome, bargain, nurture])
+    parts, reasons = check(data)
+    status = verdict(reasons)
 
-    if refused(blob):
-        print(REFUSAL)
+    if args.json:
+        result = {"pass": not reasons, "verdict": status, "reasons": reasons}
+        if not reasons:
+            result.update({key: parts[key] for key in PARTS})
+        print(json.dumps(result, ensure_ascii=False))
+        return 0 if not reasons else 1
+
+    if reasons:
+        print(status)
+        for reason in reasons:
+            print(f"- {reason}")
         return 1
 
-    if not pain or not welcome or not bargain or not nurture:
-        print("draft is incomplete")
-        return 1
-
-    if pain.lower() not in nurture.lower():
-        print(REFUSAL)
-        return 1
-
-    print(f"welcome: {welcome}")
-    print(f"bargain: {bargain}")
-    print(f"nurture: {nurture}")
+    for key in PARTS:
+        print(f"{key}: {parts[key]}")
     return 0
 
 

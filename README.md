@@ -22,6 +22,8 @@ This pack is the files in this repository. Open the tree on the host you already
 
 The scorer is Python in this repo. Host paths are on the [Skill packs catalog](https://jaymountconsulting.com/skills).
 
+In Claude Code the repo is a plugin named `email-sequence`. Its one skill is `lifecycle-email`, so the command is `/email-sequence:lifecycle-email`. The agent also picks it up on its own when you ask for a welcome, onboarding, or nurture sequence.
+
 ## What you walk out with in 15 minutes
 
 Artifact: `examples/lifecycle-good.json`.
@@ -31,7 +33,18 @@ python3 scripts/score.py --file examples/lifecycle-good.json
 python3 scripts/score.py --file examples/lifecycle-refused.json
 ```
 
-The good draft exits 0 and prints the welcome, the bargain, and the nurture. The refused draft exits 1. Then drop in yours.
+The good draft exits 0 and prints the welcome, the bargain, and the nurture. The refused draft exits 1 and names each gate it failed:
+
+```
+a generic drip and a cold email
+- cold email: welcome says "introduce our"
+- generic drip: bargain says "Day 1"
+- generic drip: nurture says "generic drip"
+- cold email: nurture says "cold email"
+- pain mismatch: nurture does not repeat the pain in their words
+```
+
+Then drop in yours. Add `--json` when another tool reads the result.
 
 ## What this pack will not do
 
