@@ -3,9 +3,12 @@
 
 Stdlib only. No network. Does not send.
 
-  python3 scripts/score.py --file draft.json
+  python3 scripts/score.py --file gtm/sequence.json
   python3 scripts/score.py --stdin
-  python3 scripts/score.py --file draft.json --json
+  python3 scripts/score.py --file gtm/sequence.json --json
+
+Each failing line reads `- <what is wrong> -> <what to change>`; the last line
+names the next step.
 
 Exit 0: welcome, bargain, and nurture pass.
 Exit 1: refused (generic drip, cold email, pain mismatch, repeated notes or
@@ -143,6 +146,28 @@ def check(data: dict) -> tuple[dict, list[str]]:
     return parts, reasons
 
 
+NEXT_PASS = "/gtm:next"
+NEXT_FAIL = "fix the lines above and run this again."
+EXAMPLE = "example:\n  python3 scripts/score.py --file examples/lifecycle-good.json"
+FIXES = (
+    ("generic drip:", "drop the day-1/day-3/day-7 or tip-series framing; write to their pain"),
+    ("cold email:", "they opted in; name what they asked for instead of introducing the product"),
+    ("missing:", "fill each named field with text"),
+    ("pain mismatch: nurture_subject", "put the pain phrase in nurture_subject, in their words"),
+    ("pain mismatch:", "repeat the pain phrase inside nurture, in their words"),
+    ("not three notes:", "write welcome, bargain, and nurture each for its own job"),
+    ("no opt-in:", "say in the welcome that they asked, opted in, or signed up"),
+    ("subjects repeat:", "give each note its own subject line"),
+)
+
+
+def fix_for(reason: str) -> str:
+    for prefix, fix in FIXES:
+        if reason.startswith(prefix):
+            return fix
+    return "fix this line"
+
+
 def verdict(reasons: list[str]) -> str:
     if not reasons:
         return "pass"
@@ -153,30 +178,40 @@ def verdict(reasons: list[str]) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Score a lifecycle email draft. Exit 0 pass, 1 refused or incomplete, 2 bad input."
+        description="Score a lifecycle email draft. Exit 0 pass, 1 refused or incomplete, 2 bad input.",
+        epilog=EXAMPLE,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument("--file", help="Path to a JSON object")
+    parser.add_argument("--file", help="Path to a JSON object (gtm/sequence.json)")
+    parser.add_argument("--input", dest="file", help=argparse.SUPPRESS)
     parser.add_argument("--stdin", action="store_true", help="Read a JSON object from stdin")
     parser.add_argument("--json", action="store_true", help="Print the result as one JSON object")
     args = parser.parse_args()
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(errors="replace")
     data = load_payload(args)
     if not isinstance(data, dict):
         fail_input("JSON must be an object")
 
     parts, reasons = check(data)
     status = verdict(reasons)
+    fixes = [fix_for(reason) for reason in reasons]
+    step = NEXT_FAIL if reasons else NEXT_PASS
 
     if args.json:
         result = {"pass": not reasons, "verdict": status, "reasons": reasons}
         if not reasons:
             result.update({key: parts[key] for key in PARTS + SUBJECTS if parts[key]})
+        result["fixes"] = fixes
+        result["next"] = step
         print(json.dumps(result, ensure_ascii=False))
         return 0 if not reasons else 1
 
     if reasons:
         print(status)
-        for reason in reasons:
-            print(f"- {reason}")
+        for reason, fix in zip(reasons, fixes):
+            print(f"- {reason} → {fix}")
+        print(f"Next: {step}")
         return 1
 
     for key in PARTS:
@@ -184,6 +219,7 @@ def main() -> int:
         if subject:
             print(f"{key} subject: {subject}")
         print(f"{key}: {parts[key]}")
+    print(f"Next: {step}")
     return 0
 
 

@@ -6,6 +6,23 @@
 
 An email sequence is the series of emails after someone raises their hand.
 
+## In 60 seconds
+
+```text
+/plugin marketplace add cmj-hub/gtm-operator-skills
+/plugin install email-sequence@gtm-operator-skills
+/email-sequence:lifecycle-email
+```
+
+Or score the sample without an agent:
+
+```bash
+python3 scripts/score.py --file examples/lifecycle-good.json      # exit 0, prints welcome, bargain, nurture, then "Next: /gtm:next"
+python3 scripts/score.py --file examples/lifecycle-refused.json   # exit 1: - cold email: welcome says "introduce our" → they opted in; name what they asked for instead of introducing the product
+```
+
+Part of the GTM operator suite — `/plugin install gtm@gtm-operator-skills` installs all ten.
+
 The sample starts with the trial checklist they asked for.
 
 The good draft passes. A generic drip fails the score.
@@ -18,12 +35,7 @@ The build guide teaches a human. The pack teaches an agent.
 
 ## Install
 
-In Claude Code, install it from the suite marketplace:
-
-```
-/plugin marketplace add cmj-hub/gtm-operator-skills
-/plugin install email-sequence@gtm-operator-skills
-```
+In Claude Code, install it from the suite marketplace (the two lines above).
 
 Other agents (Codex, Cursor, and the rest) can install it with the skills CLI:
 
@@ -35,7 +47,7 @@ Or clone the repository and open the tree on the host you already run.
 
 The scorer is Python in this repo. Host paths are on the [Skill packs catalog](https://jaymountconsulting.com/skills).
 
-In Claude Code the repo is a plugin named `email-sequence`. Its one skill is `lifecycle-email`, so the command is `/email-sequence:lifecycle-email`. The agent also picks it up on its own when you ask for a welcome, onboarding, or nurture sequence.
+In Claude Code the repo is a plugin named `email-sequence`. Its one skill is `lifecycle-email` (in `skills/lifecycle-email/`), so the command is `/email-sequence:lifecycle-email`; `/email-sequence:lifecycle-email score` scores the draft already in `gtm/sequence.json`. Moved in 0.7: the skill left the repo root for `skills/lifecycle-email/`, and the draft moved from `draft.json` to `gtm/sequence.json`. The command is unchanged. The agent also picks it up on its own when you ask for a welcome, onboarding, or nurture sequence.
 
 ## What you walk out with in 15 minutes
 
@@ -50,15 +62,16 @@ The good draft exits 0 and prints the welcome, the bargain, and the nurture. The
 
 ```
 a generic drip and a cold email
-- cold email: welcome says "introduce our"
-- generic drip: bargain says "Day 1"
-- generic drip: nurture says "generic drip"
-- cold email: nurture says "cold email"
-- pain mismatch: nurture does not repeat the pain in their words
-- no opt-in: welcome does not say they asked, opted in, or signed up
+- cold email: welcome says "introduce our" → they opted in; name what they asked for instead of introducing the product
+- generic drip: bargain says "Day 1" → drop the day-1/day-3/day-7 or tip-series framing; write to their pain
+- generic drip: nurture says "generic drip" → drop the day-1/day-3/day-7 or tip-series framing; write to their pain
+- cold email: nurture says "cold email" → they opted in; name what they asked for instead of introducing the product
+- pain mismatch: nurture does not repeat the pain in their words → repeat the pain phrase inside nurture, in their words
+- no opt-in: welcome does not say they asked, opted in, or signed up → say in the welcome that they asked, opted in, or signed up
+Next: fix the lines above and run this again.
 ```
 
-Then drop in yours. Add `--json` when another tool reads the result. `examples/lifecycle-subjects.json` adds the optional subject lines.
+Then drop in yours at `gtm/sequence.json`. Add `--json` when another tool reads the result (`fixes` and `next` ride along). `examples/lifecycle-subjects.json` adds the optional subject lines.
 
 ## What this pack will not do
 
@@ -95,7 +108,7 @@ Next: [Sales prospecting](https://github.com/cmj-hub/claude-prospect-list)
 
 ## Privacy and security
 
-The scorer is local Python 3 standard library. It reads the draft JSON you pass it and nothing else; the skill reads `brand-config.json` if present and writes no file outside your draft. No script opens a network connection. No telemetry, no credentials, and nothing is sent. See [SECURITY.md](SECURITY.md).
+The scorer is local Python 3 standard library. It reads the draft JSON you pass it and nothing else; the skill reads `brand-config.json` if present and writes no file outside your draft, `gtm/sequence.json`. No script opens a network connection. No telemetry, no credentials, and nothing is sent. See [SECURITY.md](SECURITY.md).
 
 ## License
 

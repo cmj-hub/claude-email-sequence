@@ -8,8 +8,9 @@ before you contribute.
 - **Bug reports** — open an issue with a reproducible case. The
   scripts in `scripts/` are deterministic, so bugs there are usually
   one-line fixes.
-- **New sub-skills** that extend the existing framework. Discuss in
-  an issue first if it's a substantial addition.
+- **New steps** that extend the existing framework, inside the one
+  skill at `skills/lifecycle-email/SKILL.md`. Discuss in an issue first
+  if it's a substantial addition.
 - **Calibration improvements** to the scoring scripts — if you can
   show a case where the script scores wrong, that's gold.
 - **Cross-runtime ports** (Cursor, Gemini CLI, Codex) — host paths
@@ -45,11 +46,12 @@ python3 -m unittest discover -s tests
 
 - [ ] Skill names follow the spec (lowercase, hyphens, ≤64 chars,
       directory matches `name:` in frontmatter)
-- [ ] Sub-skill descriptions include trigger phrases inline
+- [ ] The pack ships one skill (`skills/lifecycle-email/SKILL.md`); its
+      description includes trigger phrases inline
 - [ ] `python3 -m unittest discover -s tests` passes
 - [ ] If you touch a script, smoke-test it and paste output in the PR
 - [ ] If you bump behavior, bump `version` in `.claude-plugin/plugin.json`
-- [ ] If you add a new sub-skill, list it in the README companion table
+- [ ] If you add a new step, list it in the skill's checklist and the README
 - [ ] Examples stay paired: one good exit-0 draft, one refused exit-1
 - [ ] No new dependencies (pip packages or npm packages)
 
