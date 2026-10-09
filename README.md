@@ -79,6 +79,12 @@ Then drop in yours at `gtm/sequence.json`. Add `--json` when another tool reads 
 
 It will not send the email. It does not write a generic drip. It will not write a cold email.
 
+## The data step this pack leaves to you
+
+This pack scores welcome, bargain, and nurture. Address verification before send sits outside the pack.
+
+Run [Verify an email](https://thegtmdirectory.com/jobs/verify-an-email) on The Growth Desk before any sequence goes out. A found address is not sendable until verify returns deliverable.
+
 ## Does this include a newsletter?
 
 One issue can sit inside the sequence. A newsletter product is not a separate pack.
