@@ -68,6 +68,10 @@ Exit 0 passes. Exit 1 is refused or incomplete. Exit 2 means the input was not a
 
 Do not game the scorer by swapping a flagged phrase for a synonym. If the note is a drip or a cold email, rewrite it.
 
+## Banned: found is not sendable
+
+A found email is not sendable until verify returns deliverable. Catch-all and unknown stay off the send list. This pack scores the sequence; verification is a separate step before any send.
+
 ## Run
 
 ```
