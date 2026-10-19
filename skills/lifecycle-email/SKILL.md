@@ -2,7 +2,7 @@
 name: lifecycle-email
 description: "Draft a lifecycle email sequence as a welcome, delivery of the bargain, then nurture tied to the pain they showed, and score it with a local script. Use when someone already opted in (signup, lead magnet, trial, waitlist, demo request) and you need a welcome email, onboarding sequence, or nurture sequence that is not a generic drip. Not for cold outreach or re-engaging prospects who never opted in (use cold-email)."
 argument-hint: "[the pain they showed | score]"
-allowed-tools: Read Write Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score.py:*)
+allowed-tools: Read Write(./gtm/**) Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/score.py:*)
 models: ""
 ---
 
