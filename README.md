@@ -51,6 +51,23 @@ The scorer is Python in this repo. Host paths are on the [Skill packs catalog](h
 
 In Claude Code the repo is a plugin named `email-sequence`. Its one skill is `lifecycle-email` (in `skills/lifecycle-email/`), so the command is `/email-sequence:lifecycle-email`; `/email-sequence:lifecycle-email score` scores the draft already in `gtm/sequence.json`. Moved in 0.7: the skill left the repo root for `skills/lifecycle-email/`, and the draft moved from `draft.json` to `gtm/sequence.json`. The command is unchanged. The agent also picks it up on its own when you ask for a welcome, onboarding, or nurture sequence.
 
+### From npm
+
+The same pack is on npm as [`@jmc-gtm/claude-email-sequence`](https://www.npmjs.com/package/@jmc-gtm/claude-email-sequence), released from this repo's version tags with npm provenance. It has no dependencies and no install scripts.
+
+In a project, for any agent host the skills installer knows (`experimental_sync` is still marked experimental there):
+
+```bash
+npm install -D @jmc-gtm/claude-email-sequence
+npx skills experimental_sync -a claude-code -y
+```
+
+In your own Claude Code plugin marketplace, point an entry at the package:
+
+```json
+{ "name": "email-sequence", "source": { "source": "npm", "package": "@jmc-gtm/claude-email-sequence" } }
+```
+
 ## What you walk out with in 15 minutes
 
 Artifact: `examples/lifecycle-good.json`.
